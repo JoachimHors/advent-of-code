@@ -1,4 +1,4 @@
-import re
+from functools import reduce
 
 
 class Number(object):
@@ -28,19 +28,23 @@ for index, line in enumerate(lines):
         end = i
         numbers.append(Number(int(number), int(index), int(start), int(end)))
 
-# Sum all valid part numbers
-sum = 0
-pattern = r"[^\.|\d]"
-for number in numbers:
-    left = number.start - 1 if number.start > 0 else 0
-    right = number.end + 1 if number.end + \
-        1 < len(lines[number.line]) else number.end
-    top = number.line - 1 if number.line > 0 else 0
-    bottom = number.line + 1 if number.line + 1 < len(lines) else number.line
+gears = {}
+for num in numbers:
+    for i in range(num.line - 1, num.line + 2):
+        if i < 0 or i >= len(lines):
+            continue
+        for j in range(num.start - 1, num.end + 1):
+            if j < 0 or j >= len(lines[0]):
+                continue
+            if lines[i][j] != "*":
+                continue
+            if not gears.get((i, j)):
+                gears[(i, j)] = []
+            gears[(i, j)].append(num.value)
 
-    box_lines = lines[top:bottom + 1]
-    box_string = "".join([x[left:right] for x in box_lines])
-    if re.search(pattern, box_string):
-        sum += number.value
+gear_ratio_sum = 0
+for gear in gears:
+    if len(gears[gear]) == 2:
+        gear_ratio_sum += reduce(lambda a, b: a * b, gears[gear])
 
-print(sum)
+print(gear_ratio_sum)
