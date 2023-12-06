@@ -1,53 +1,36 @@
-import re
-
+# Complete redesign of the approach to the problem using ranges
 
 with open("input.txt", "r") as file:
-    lines = file.readlines()
+    input_line, *mapping_blocks = file.read().split("\n\n")
 
+seed_inputs = list(map(int, input_line.split(":")[1].split()))
 
-def map_seed(mapping, seed):
-    correct_map = False
-    for destination_start, source_start, length in mapping:
-        if source_start <= seed < source_start + length:
-            offset = seed - source_start
-            return destination_start + offset
-    return seed
+seed_ranges = []
 
+for i in range(0, len(seed_inputs), 2):
+    seed_start, range_length = seed_inputs[i], seed_inputs[i + 1]
+    seed_ranges.append((seed_start, seed_start + range_length))
 
-def parse_input(lines):
-    mappings = {}
-    map_name = 'seeds'
-    mappings[map_name] = [int(x) for x in lines[0].split(': ')[1].split(' ')]
+for mapping_block in mapping_blocks:
+    category_mappings = []
+    for line in mapping_block.splitlines()[1:]:
+        category_mappings.append(list(map(int, line.split())))
+    transformed_ranges = []
+    while len(seed_ranges) > 0:
+        range_start, range_end = seed_ranges.pop()
+        for dest_start, src_start, src_length in category_mappings:
+            overlap_start = max(range_start, src_start)
+            overlap_end = min(range_end, src_start + src_length)
+            if overlap_start < overlap_end:
+                transformed_ranges.append(
+                    (overlap_start - src_start + dest_start, overlap_end - src_start + dest_start))
+                if overlap_start > range_start:
+                    seed_ranges.append((range_start, overlap_start))
+                if range_end > overlap_end:
+                    seed_ranges.append((overlap_end, range_end))
+                break
+        else:
+            transformed_ranges.append((range_start, range_end))
+    seed_ranges = transformed_ranges
 
-    for line in lines[1:]:
-        if 'map' in line:
-            map_name = re.search(r'(\w+-to-\w+)', line).group(1)
-            mappings[map_name] = []
-        if re.search(r'\d', line):
-            mappings[map_name].append([int(x) for x in line.split(' ')])
-
-    for key, value in mappings.items():
-        if key == 'seeds':
-            continue
-        mappings[key] = sorted(value, key=lambda x: x[0])
-    return mappings
-
-
-def convert_seeds(mappings):
-    smallest_location = float('inf')  # Initialize with a very large number
-    categories = ['seed-to-soil', 'soil-to-fertilizer', 'fertilizer-to-water', 'water-to-light',
-                  'light-to-temperature', 'temperature-to-humidity', 'humidity-to-location']
-
-    for seed in mappings['seeds']:
-        location = seed
-        for category in categories:
-            location = map_seed(mappings[category], location)
-
-        if location < smallest_location:
-            smallest_location = location
-
-    return smallest_location
-
-
-mappings = parse_input(lines)
-print(convert_seeds(mappings))
+print(min(seed_ranges)[0])
