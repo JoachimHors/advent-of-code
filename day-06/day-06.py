@@ -5,20 +5,17 @@ Time:        58     81     96     76
 Distance:   434   1041   2219   1218
 """
 
-times = [int(x) for x in re.findall(r'\d+', lines.split('\n')[1])]
-distances = [int(x) for x in re.findall(r'\d+', lines.split('\n')[2])]
+time = int("".join([x for x in re.findall(r'\d+', lines.split('\n')[1])]))
+distance = int("".join([x for x in re.findall(r'\d+', lines.split('\n')[2])]))
 
-races = list(zip(times, distances))
+race = (time, distance)
 
-sum = 1
-for race in races:
-    margin = 0
-    time = race[0]
-    record = race[1]
-    for i in range(race[0]):
-        distance = (time - i) * i
-        if distance > record:
-            margin += 1
-    sum *= margin
+margin = 0
+time = race[0]
+record = race[1]
+for i in range(race[0]):
+    distance = (time - i) * i
+    if distance > record:
+        margin += 1
 
-print(sum)
+print(margin)
