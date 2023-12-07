@@ -16,6 +16,15 @@ for line in lines:
     hand = (split[0], split[1])
     counter = Counter(hand[0])
     max_count = max(counter.values())
+
+    temp = hand[0].replace("J", "")
+    counter = Counter(temp)
+    if len(temp) != 0:
+        max_count = max(counter.values()) + hand[0].count("J")
+    else:
+        max_count = hand[0].count("J")
+
+    # normal card handling
     if max_count == 5:
         five_of_a_kind.append(hand)
     elif max_count == 4:
@@ -34,8 +43,8 @@ for line in lines:
         high_card.append(hand)
 
 # Sort the lists
-sort_order = {"A": 14, "K": 13, "Q": 12, "J": 11, "T": 10,
-              "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2}
+sort_order = {"A": 14, "K": 13, "Q": 12, "T": 10,
+              "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2, "J": 1}
 
 
 def sort_key(hand):
