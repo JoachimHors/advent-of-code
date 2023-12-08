@@ -4,28 +4,23 @@ fn main() {
     dbg!(output);
 }
 
-fn part1(input: &str) -> u64 {
-    let _input: String = input.to_string();
-    let mut sum: u64 = 0;
+fn part1(input: &str) -> u32 {
+    let output = input
+        .lines()
+        .map(|line| {
+            let mut iter = line.chars().filter_map(|character| character.to_digit(10));
+            let first = iter.next().expect("Expected a number");
 
-    for line in _input.lines() {
-        let mut first: char = 'a';
-        let mut last: char = 'a';
-        for character in line.chars() {
-            if character.is_digit(10) {
-                if first == 'a' {
-                    first = character;
-                }
-                last = character;
+            match iter.last() {
+                Some(number) => format!("{first}{number}"),
+                None => format!("{first}{first}"),
             }
-        }
-        let concatenated = format!("{}{}", first, last);
-        if let Ok(value) = concatenated.parse::<u64>() {
-            sum += value;
-        }
-    }
+            .parse::<u32>()
+            .expect("Expected a valid number")
+        })
+        .sum::<u32>();
 
-    sum
+    output
 }
 
 // Tests
