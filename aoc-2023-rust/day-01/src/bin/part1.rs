@@ -22,9 +22,6 @@ fn part1(input: &str) -> u64 {
         let concatenated = format!("{}{}", first, last);
         if let Ok(value) = concatenated.parse::<u64>() {
             sum += value;
-            println!("{}", line);
-            println!("{}", value);
-            println!("");
         }
     }
 
