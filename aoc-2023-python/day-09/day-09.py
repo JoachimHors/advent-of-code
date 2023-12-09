@@ -21,15 +21,12 @@ for line in lines:
                 done = False
                 break
 
-    for difference in differences:
-        print(difference)
-
     differences.reverse()
 
     last_diff = 0
     for difference in differences:
-        difference.append(difference[-1] + last_diff)
-        last_diff = difference[-1]
-    result += differences[-1][-1]
+        difference.insert(0, difference[0] - last_diff)
+        last_diff = difference[0]
+    result += differences[-1][0]
 
 print(result)
