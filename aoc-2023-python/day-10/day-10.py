@@ -60,9 +60,39 @@ def bfs_longest_path(grid, start):
                     distances[(nx, ny)] = distances[(x, y)] + 1
                     max_distance = max(max_distance, distances[(nx, ny)])
 
-    return max_distance
+    return max_distance, visited
+
+
+def diagonal_raycast(grid, loop_coordinates):
+    """ Diagonal raycast to count enclosed tiles. """
+    inside_count = 0
+    w = len(grid[0])
+    h = len(grid)
+
+    for y in range(h):
+        for x in range(w):
+            if (x, y) in loop_coordinates:
+                continue
+
+            crosses = 0
+            x2, y2 = x, y
+
+            while x2 < w and y2 < h:
+                if (x2, y2) in loop_coordinates and grid[y2][x2] != "L" and grid[y2][x2] != "7":
+                    crosses += 1
+                x2 += 1
+                y2 += 1
+
+            if crosses % 2 == 1:
+                inside_count += 1
+
+    return inside_count
 
 
 grid = parse_input('input.txt')
 start = find_start_position(grid)
-print(f"Part 1: {bfs_longest_path(grid, start)}")
+max_distance, visited = bfs_longest_path(grid, start)
+print(f"Part 1: {max_distance}")
+
+inside_count = diagonal_raycast(grid, visited)
+print(f"Part 2: {inside_count}")
