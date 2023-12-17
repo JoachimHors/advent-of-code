@@ -9,11 +9,10 @@ def parse_input(test=False):
     return data
 
 
-def part1(data):
+def part1(data, state=[(0, -1, 0, 1)]):
     """Returns number of energized tiles with BFS"""
-    energized = set()
-    state = [(0, -1, 0, 1)]
 
+    energized = set()
     queue = deque(state)
 
     while queue:
@@ -53,12 +52,31 @@ def part1(data):
     return len({(x, y) for (x, y, _, _) in energized})
 
 
+def part2(data):
+    max_engergized = 0
+    for i in range(len(data)):
+        top = part1(data, state=[(i, -1, 0, 1)])
+        bottom = part1(data, state=[(i, len(data[0]), 0, -1)])
+        max_engergized = max(max_engergized, top, bottom)
+
+    for i in range(len(data[0])):
+        left = part1(data, state=[(-1, i, 1, 0)])
+        right = part1(data, state=[(len(data), i, -1, 0)])
+        max_engergized = max(max_engergized, left, right)
+
+    return max_engergized
+
+
 print(f"Part 1: {part1(parse_input())}")
+print(f"Part 2: {part2(parse_input())}")
 
 
 class Test(unittest.TestCase):
     def test_part1(self):
         self.assertEqual(part1(parse_input(test=True)), 46)
+
+    def test_part2(self):
+        self.assertEqual(part2(parse_input(test=True)), 51)
 
 
 unittest.main()
